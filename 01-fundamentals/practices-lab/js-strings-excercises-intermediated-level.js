@@ -40,51 +40,41 @@
 // - But keep the original case when replacing consonants
 
 function encryptMessage(message) {
-    let reverseMessage=reverseMyMessage(message);
-    let encryptMessage='';
-    const vowels = "aeiouAEIOU";
-    const numbers = "1234512345";
-    const consonants = "bcdfghjklmnpqrstvwxyz"; 
+  let reverseMessage = reverseMyMessage(message);
+  let encryptMessage = "";
+  const vowels = "aeiouAEIOU";
+  const numbers = "1234512345";
+  const consonants = "bcdfghjklmnpqrstvwxyz";
 
-    for (let index = 0; index < reverseMessage.length; index++) {
-        let char=reverseMessage[index];
+  for (let index = 0; index < reverseMessage.length; index++) {
+    let char = reverseMessage[index];
 
-        if (char===' ') {
-            encryptMessage+="--";
-        }
-
-        else if (vowels.includes(char)) {
-            let indexVowel=vowels.indexOf(char);
-            encryptMessage+=numbers[indexVowel];
-            
-        } 
-
-        //1. Verificar si el char (en minúscula) está en consonantes 2. Guardar en un booleano: ¿es mayúscula? (char === char.toUpperCase())3. Guardar el char en minúscula en otra variable4. Buscar el índice de esa minúscula en consonantes 5. Si el índice es 'z' → siguiente = 'b'Si no → siguiente = consonantes[indice + 1] 6. Para el resultado final:- Si es mayúscula → siguiente.toUpperCase()Si no → siguiente (se queda minúscula)//
-
-        else if (consonants.includes(String(char).toLowerCase())) {
-            let isUpperCase= char === String(char).toUpperCase();
-            let lowerCaseChar=String(char).toLowerCase();
-            let indexConsonant=consonants.indexOf(lowerCaseChar);
-            let nextChar= lowerCaseChar ==='z' ? 'b' : consonants[indexConsonant+1];
-            encryptMessage+= isUpperCase ? nextChar.toUpperCase() : nextChar;
-        }
-
-        else{
-            encryptMessage+=char;
-        }
-    
+    if (char === " ") {
+      encryptMessage += "--";
+    } else if (vowels.includes(char)) {
+      let indexVowel = vowels.indexOf(char);
+      encryptMessage += numbers[indexVowel];
+    } else if (consonants.includes(String(char).toLowerCase())) {
+      let isUpperCase = char === String(char).toUpperCase();
+      let lowerCaseChar = String(char).toLowerCase();
+      let indexConsonant = consonants.indexOf(lowerCaseChar);
+      let nextChar =
+        lowerCaseChar === "z" ? "b" : consonants[indexConsonant + 1];
+      encryptMessage += isUpperCase ? nextChar.toUpperCase() : nextChar;
+    } else {
+      encryptMessage += char;
     }
+  }
 
-    return encryptMessage=`#${encryptMessage}#`; 
+  return (encryptMessage = `#${encryptMessage}#`);
 }
 
-function reverseMyMessage(message){
-    let newMessage='';
-    for (let index = message.length-1; index >=0; index--) {
-        newMessage+=message[index];
-        
-    }
-    return newMessage;
+function reverseMyMessage(message) {
+  let newMessage = "";
+  for (let index = message.length - 1; index >= 0; index--) {
+    newMessage += message[index];
+  }
+  return newMessage;
 }
 
 // Test cases:
@@ -143,8 +133,85 @@ console.log("Correct?", encryptMessage("aeiou") === "#54321#");
 // - Use includes() to check for forbidden words
 // - Build the errors array as you go
 
+//bueno mira si lo tengo que retornar es un objeto voy  crearme una variable bool para que guarde el resultado de que todas las reglas se cumplen , para la reglas me voya  crear un contador que me va a decir cuantas reglas se cumplieron , en el array de string si me da falsa mi variable bool anado esa regala al array , y en el strenght del objeto hago un if donde cogere el score que  tiene guardado cuantas reglas se cumplen
 function validatePassword(password) {
-  // Write your code here
+  let specialCharacters = "!@#$%^&*";
+  let numbers = "0123456789";
+  let rulesPassed = 0;
+  let errors = [];
+
+  let hasUppercase = false;
+  let hasLowercase = false;
+  let hasNumber = false;
+  let hasSpecialChar = false;
+  let hasValidLength = password.length >= 8;
+
+  for (let i = 0; i < password.length; i++) {
+    let char = password[i];
+
+    if (char >= "A" && char <= "Z") {
+      hasUppercase = true;
+    } else if (char >= "a" && char <= "z") {
+      hasLowercase = true;
+    } else if (numbers.includes(char)) {
+      hasNumber = true;
+    } else if (specialCharacters.includes(char)) {
+      hasSpecialChar = true;
+    }
+  }
+
+  if (hasValidLength) {
+    rulesPassed++;
+  } else {
+    errors.push("Must be at least 8 characters long");
+  }
+
+  if (hasUppercase) {
+    rulesPassed++;
+  } else {
+    errors.push("Must contain at least one uppercase letter");
+  }
+
+  if (hasLowercase) {
+    rulesPassed++;
+  } else {
+    errors.push("Must contain at least one lowercase letter");
+  }
+
+  if (hasNumber) {
+    rulesPassed++;
+  } else {
+    errors.push("Must contain at least one number");
+  }
+
+  if (hasSpecialChar) {
+    rulesPassed++;
+  } else {
+    errors.push("Must contain at least one special character");
+  }
+
+  let isValid = errors.length === 0;
+  let strength = "";
+
+  if (rulesPassed <= 2) {
+    strength = "Weak";
+  } else if (rulesPassed === 3) {
+    strength = "Medium";
+  } else if (rulesPassed === 4) {
+    strength = "Strong";
+  } else if (rulesPassed === 5) {
+    strength = "Very Strong";
+  }
+  else{
+    strength="None"
+  }
+
+  return {
+    isValid,
+    score: rulesPassed,
+    errors,
+    strength,
+  }
 }
 
 // Test cases:
