@@ -133,7 +133,7 @@ console.log("Correct?", encryptMessage("aeiou") === "#54321#");
 // - Use includes() to check for forbidden words
 // - Build the errors array as you go
 
-//bueno mira si lo tengo que retornar es un objeto voy  crearme una variable bool para que guarde el resultado de que todas las reglas se cumplen , para la reglas me voya  crear un contador que me va a decir cuantas reglas se cumplieron , en el array de string si me da falsa mi variable bool anado esa regala al array , y en el strenght del objeto hago un if donde cogere el score que  tiene guardado cuantas reglas se cumplen
+
 function validatePassword(password) {
   let specialCharacters = "!@#$%^&*";
   let numbers = "0123456789";
@@ -268,8 +268,71 @@ console.log("Your result:", JSON.stringify(result4, null, 2));
 // - Count characters without spaces for the stats
 
 function formatText(text) {
-  // Write your code here
+  
+  let cleaned = text.trim(); 
+  cleaned = cleaned.replace(/\s+/g, " "); 
+  cleaned = cleaned.replace(/\s+([.,!?;:])/g, "$1");
+  cleaned = cleaned.replace(/([.,!?;:])(?!\s|$)/g, "$1 ");
+  cleaned = cleaned.replace(/ +$/, ""); 
+
+  const sentences = cleaned.split(/(?<=[.!?])\s+/);
+
+  const isAcronym = (word) =>
+    word.length >= 3 && word === word.toUpperCase() && /[A-Z]/.test(word);
+
+  const processedSentences = sentences.map((sentence) => {
+    const words = sentence.split(" ");
+    if (words.length === 0) return "";
+    let firstWord = words[0];
+    if (!isAcronym(firstWord)) {
+      firstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
+    }
+    words[0] = firstWord;
+    return words.join(" ");
+  });
+
+  let formattedText = processedSentences.join(" ");
+  const MAX_WIDTH = 40;
+  const allWords = formattedText.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  for (const word of allWords) {
+    if (currentLine === "") {
+      currentLine = word;
+    } else {
+      const candidate = currentLine + " " + word;
+      if (candidate.length <= MAX_WIDTH) {
+        currentLine = candidate;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+  }
+  if (currentLine !== "") lines.push(currentLine);
+
+  const wrappedText = lines.join("\n");
+
+  const charsNoSpaces = formattedText.replace(/\s/g, "").length;
+  const wordCount = formattedText
+    .split(/\s+/)
+    .filter((w) => w.length > 0).length;
+  const sentenceCount = sentences.length;
+  const lineCount = lines.length;
+
+  const stats = {
+    characters: charsNoSpaces,
+    words: wordCount,
+    sentences: sentenceCount,
+    lines: lineCount,
+  };
+
+  // 8. RESULTADO FINAL
+  return { formatted: wrappedText, stats };
 }
+
+
 
 // Test cases:
 console.log("\n=== EXERCISE 3: TEXT FORMATTER ===\n");
